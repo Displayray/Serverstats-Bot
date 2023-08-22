@@ -1,0 +1,34 @@
+const Discord = require('discord.js')
+//command to setup the service!!
+
+const prefix = require('../config.json')
+const createParent = require('../exports/setupParent')
+const guildModel = require('../models/guild')
+const setupModel = require('../models/setupSchema')
+const fetchAll = require('discord-fetch-all');
+const fs = require('fs');
+
+module.exports = async(message, client) => {
+    const parentDoc = await setupModel.findOne({
+        guildID: message.guild.id,
+    })
+
+    if (message.content.startsWith(`${prefix}setup`)) {
+        message.reply("YEET")
+        if (!message.member.hasPermission("ADMINISTRATOR")) return
+
+        if (parentDoc) {
+            const parent = message.guild.channels.cache.get(parentDoc.channelID)
+
+            if (!parent) {
+                await parentDoc.deleteOne()
+                createParent(message)
+            } else {
+                createParent(message)
+            }
+        }
+        
+    }
+
+
+}
